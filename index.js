@@ -115,6 +115,7 @@ client.on("messageCreate", async (message) => {
 
 // === Start the Bot ===
 console.log("🔑 Attempting Discord login with token...");
+console.log("🔍 Discord token loaded:", !!process.env.DISCORD_TOKEN);
 client.login(process.env.DISCORD_TOKEN)
   .then(() => console.log("✅ Discord login successful"))
   .catch((err) => {
