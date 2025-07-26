@@ -36,18 +36,35 @@ const client = new Client({
   ],
 });
 
-client.once("ready", () => {
-  console.log(`📚 VoidGPT logged in as ${client.user.tag}`);
-  client.user.setActivity("existential dread", { type: "WATCHING" });
+client.on("debug", (info) => {
+  console.log("[Discord DEBUG]:", info);
 });
 
 client.on("error", (error) => {
-  console.error("Discord client error:", error);
+  console.error("[Discord ERROR]:", error);
 });
 
 client.on("shardError", (error) => {
-  console.error("Discord shard error:", error);
+  console.error("[Discord SHARD ERROR]:", error);
 });
+
+client.on("shardDisconnect", (event, shardID) => {
+  console.warn(`[Discord SHARD DISCONNECT] Shard ${shardID}:`, event);
+});
+
+const loginPromise = client.login(process.env.DISCORD_TOKEN);
+
+Promise.race([
+  loginPromise,
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Login timeout (Discord not responding)")), 30000)
+  )
+])
+  .then(() => console.log("✅ Discord login successful"))
+  .catch((err) => {
+    console.error("🛑 Discord login failed:", err);
+    process.exit(1);
+  });
 
 // === Bot Identity / System Prompt ===
 const SYSTEM_PROMPT = `
