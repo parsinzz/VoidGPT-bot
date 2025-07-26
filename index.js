@@ -11,7 +11,7 @@ const client = new Client({
   ],
 });
 
-const openai = new OpenAI();
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
