@@ -116,8 +116,13 @@ client.on("messageCreate", async (message) => {
 // === Start the Bot ===
 console.log("🔑 Attempting Discord login with token...");
 console.log("🔍 Discord token loaded:", !!process.env.DISCORD_TOKEN);
-client.login(process.env.DISCORD_TOKEN)
+const loginPromise = client.login(process.env.DISCORD_TOKEN);
+
+Promise.race([
+  loginPromise,
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Login timeout (Discord not responding)")), 8000)
+  )
+])
   .then(() => console.log("✅ Discord login successful"))
-  .catch((err) => {
-    console.error("🛑 Discord login failed:", err);
-  });
+  .catch((err) => console.error("🛑 Discord login failed:", err));
