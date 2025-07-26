@@ -33,8 +33,12 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
-  ],client.once("ready", () => {
-  console.log(`🤖 Bot is online as ${client.user.tag}`);
+  ],
+});
+
+client.once("ready", () => {
+  console.log(`📚 VoidGPT logged in as ${client.user.tag}`);
+  client.user.setActivity("existential dread", { type: "WATCHING" });
 });
 
 client.on("error", (error) => {
@@ -43,8 +47,6 @@ client.on("error", (error) => {
 
 client.on("shardError", (error) => {
   console.error("Discord shard error:", error);
-});
-
 });
 
 // === Bot Identity / System Prompt ===
