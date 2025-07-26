@@ -33,7 +33,18 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
-  ],
+  ],client.once("ready", () => {
+  console.log(`🤖 Bot is online as ${client.user.tag}`);
+});
+
+client.on("error", (error) => {
+  console.error("Discord client error:", error);
+});
+
+client.on("shardError", (error) => {
+  console.error("Discord shard error:", error);
+});
+
 });
 
 // === Bot Identity / System Prompt ===
