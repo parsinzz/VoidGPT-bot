@@ -36,6 +36,7 @@ const client = new Client({
   ],
 });
 
+// === Discord Debug & Error Event Listeners ===
 client.on("debug", (info) => {
   console.log("[Discord DEBUG]:", info);
 });
@@ -51,20 +52,6 @@ client.on("shardError", (error) => {
 client.on("shardDisconnect", (event, shardID) => {
   console.warn(`[Discord SHARD DISCONNECT] Shard ${shardID}:`, event);
 });
-
-const loginPromise = client.login(process.env.DISCORD_TOKEN);
-
-Promise.race([
-  loginPromise,
-  new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("Login timeout (Discord not responding)")), 30000)
-  )
-])
-  .then(() => console.log("✅ Discord login successful"))
-  .catch((err) => {
-    console.error("🛑 Discord login failed:", err);
-    process.exit(1);
-  });
 
 // === Bot Identity / System Prompt ===
 const SYSTEM_PROMPT = `
@@ -143,16 +130,20 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-// === Start the Bot ===
+// === Start the Bot with extended timeout and login debugging ===
 console.log("🔑 Attempting Discord login with token...");
 console.log("🔍 Discord token loaded:", !!process.env.DISCORD_TOKEN);
+
 const loginPromise = client.login(process.env.DISCORD_TOKEN);
 
 Promise.race([
   loginPromise,
   new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("Login timeout (Discord not responding)")), 8000)
+    setTimeout(() => reject(new Error("Login timeout (Discord not responding)")), 30000) // 30 seconds timeout
   )
 ])
   .then(() => console.log("✅ Discord login successful"))
-  .catch((err) => console.error("🛑 Discord login failed:", err));
+  .catch((err) => {
+    console.error("🛑 Discord login failed:", err);
+    process.exit(1); // Optional: exit to allow container to restart
+  });
